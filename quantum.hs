@@ -17,8 +17,8 @@ infinite_square_well (n, a) m x = (1 / sqrt a) * sin (sqrt (2 * m * e) / h_ * x)
         e = ((fromIntegral n)^2 * pi^2 * h_**2) / (2 * m * a^2)
 
 -- Simple harmonic potential
-simple_harmonic_potential :: 
-simple_harmonic_potential = (A n) * (iterate raiseOp ground_state !! n)
+simple_harmonic_potential :: (Int, Float) -> Float -> Float -> Wave
+simple_harmonic_potential (n, w) m x = (A n) * (iterate raiseOp ground_state !! n)
     where
         A n = ((m * w) / (pi * h_)) ^ (1/4) * ((-i) ^ n) / sqrt ((fact n) * (h_ * w) ^ n)
         raiseOp state = (((h_ / i) * (d_d x $ state)) + i * m * w * x) / sqrt(2 * m)
