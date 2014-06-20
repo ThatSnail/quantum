@@ -1,3 +1,5 @@
+-- WARNING: Wave function assumed to be time-independent and separable.  TODO: Append time-dependent factor exp(-iEt/h_)
+
 type Mass = Double
 
 data Particle = Electron | Photon
