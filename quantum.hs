@@ -4,6 +4,7 @@ type Mass = Double
 
 data Particle = Electron | Photon
 
+-- All values in kg
 mass :: Particle -> Mass
 mass Electron = 9.10938291 / (10 ^ 31)
 mass Photon   = 0 -- ?
@@ -57,8 +58,8 @@ d_d x state = state -- TODO Differentiate w/ respect to x
 solveWave :: Potential -> Mass -> Wave
 solveWave (InfiniteSquareWell n a) m x = Complex (a0 * sin (sqrt (2 * m * e) / h_ * x)) 0
     where
-        a0 = 1 / sqrt a
-        e = ((fromIntegral n)^2 * pi^2 * h_**2) / (2 * m * a^2)
+        a0 = 1 / sqrt a -- Normalization constant
+        e = ((fromIntegral n)^2 * pi^2 * h_**2) / (2 * m * a^2) -- Energy
 solveWave (SimpleHarmonic n w) m x = (a n) * (iterate raiseOp (ground_state x) !! n)
     where
         a n = (Complex (((m * w) / (pi * h_)) ** (1/4)) 0) * ((-i) ^ n) / (Complex (sqrt ((fact n) * (h_ * w) ^ n)) 0)
