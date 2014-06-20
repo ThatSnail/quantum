@@ -1,5 +1,11 @@
 type Mass = Double
 
+data Particle = Electron | Photon
+
+mass :: Particle -> Mass
+mass Electron = 9.10938291 / (10 ^ 31)
+mass Photon   = 0 -- ?
+
 data Complex re im = Complex { re :: Double, im :: Double } deriving Show
 instance (Num re, Num im) => Num (Complex re im) where
     Complex re im + Complex ore oim = Complex (re + ore) (im + oim)
