@@ -33,7 +33,7 @@ eps :: (Fractional a) => a
 eps = 0.00000000001
 
 intEps :: (Fractional a) => a
-intEps = 0.0001
+intEps = 0.001
 
 fact :: (Num a) => Int -> a
 fact 0 = 1
@@ -79,3 +79,25 @@ waveProb state = integrate (mag state)
 
 waveProbPoint :: Wave -> Double -> Double
 waveProbPoint state x = waveProb state x (x + eps)
+
+runTests :: IO ()
+runTests = do
+    putStr "Running tests...\n\n"
+    putStr "Test 1 : Infinite Square Well\n"
+    putStr $ (take 50 $ repeat '=') ++ "\n\n"
+    putStr "Testing completeness condition P(-a, +a) == 1\n"
+    putStr $ testResults $ testCompleteness
+    putStr "Done!\n"
+
+testResults :: Bool -> String
+testResults True  = "Passed.\n"
+testResults False = "Failed!\n"
+
+testCompleteness :: Bool
+testCompleteness = foldl1 (&&) $ map ((<0.0001) . abs . (\x -> x-1) . (\(n, a) -> f n a (-a) a)) tests
+    where
+        f n a = waveProb (solveWave (InfiniteSquareWell n a) (mass Electron))
+        tests = do
+            n <- [1, 5]
+            a <- [0.1, 0.2..3]
+            [(n, a)]
