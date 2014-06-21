@@ -1,6 +1,7 @@
 -- WARNING: Wave function assumed to be time-independent and separable.  TODO: Append time-dependent factor exp(-iEt/h_)
 
 type Mass = Double
+type ProbabilityDistr = Double -> Double -> Double
 
 data Particle = Electron | Photon
 
@@ -62,8 +63,8 @@ fact n = fromIntegral n * fact (n-1)
 complexConj :: (Num a) => (a -> Complex b b) -> (a -> Complex b b)
 complexConj f x = Complex (re $ f x) (-(im $ f x))
 
-mag :: (Num a, Num b) => (a -> Complex b b) -> (a -> Complex b b)
-mag f x = ((complexConj f) x) * (f x)
+mag :: (Num a, Num b) => (a -> Complex b b) -> (a -> Double)
+mag f x = re (((complexConj f) x) * (f x))
 
 (<+>) :: (Num a, Num b) => (a -> b) -> (a -> b) -> (a -> b)
 f <+> g = \x -> f x + g x
@@ -94,4 +95,8 @@ solveWave (SimpleHarmonic n w) m x = (a n) * (iterate raiseOp ground_state_trans
             where
                 ground_state x = (a 0) * (Complex (exp ((-m * w * x^2) / (2 * h_))) 0)
 
+waveProb :: Wave -> ProbabilityDistr
+waveProb state = integrate (mag state)
 
+waveProbPoint :: Wave -> Double -> Double
+waveProbPoint state x = waveProb state x (x + eps)
