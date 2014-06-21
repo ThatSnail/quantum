@@ -50,7 +50,7 @@ i :: Complex Double Double
 i = Complex 0 1
 
 eps :: (Fractional a) => a
-eps = 0.00000000000000001
+eps = 0.00000000001
 
 fact :: (Num a) => Int -> a
 fact 0 = 1
@@ -79,3 +79,5 @@ solveWave (SimpleHarmonic n w) m x = (a n) * (iterate raiseOp ground_state_trans
         ground_state_trans (Complex x _) = ground_state x
             where
                 ground_state x = (a 0) * (Complex (exp ((-m * w * x^2) / (2 * h_))) 0)
+
+
