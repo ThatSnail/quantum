@@ -52,6 +52,9 @@ i = Complex 0 1
 eps :: (Fractional a) => a
 eps = 0.00000000001
 
+intEps :: (Fractional a) => a
+intEps = 0.0001
+
 fact :: (Num a) => Int -> a
 fact 0 = 1
 fact n = fromIntegral n * fact (n-1)
@@ -69,6 +72,9 @@ f <+> g = \x -> f x + g x
 -- WARNING: Only works with functions that take one argument!
 d_d :: (Fractional a, Fractional b) => (a -> b) -> a -> b
 d_d f x = ((f (x + eps)) - (f x)) / eps
+
+integrate :: (Fractional a) => (Double -> a) -> Double -> Double -> a
+integrate f a b = sum $ map ((*intEps ) . f) [a, a + intEps..b]
 
 solveWave :: Potential -> Mass -> Wave
 solveWave (InfiniteSquareWell n a) m x
