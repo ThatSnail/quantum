@@ -49,19 +49,33 @@ h_ = 1.05457173 / (10 ^ 34)
 i :: Complex Double Double
 i = Complex 0 1
 
+eps :: (Fractional a) => a
+eps = 0.00000000000000001
+
 fact :: (Num a) => Int -> a
 fact 0 = 1
 fact n = fromIntegral n * fact (n-1)
 
-d_d x state = state -- TODO Differentiate w/ respect to x
+(<+>) :: (Num a, Num b) => (a -> b) -> (a -> b) -> (a -> b)
+f <+> g = \x -> f x + g x
+
+-- Derivative
+-- WARNING: Only works with functions that take one argument!
+d_d :: (Fractional a, Fractional b) => (a -> b) -> a -> b
+d_d f x = ((f (x + eps)) - (f x)) / eps
 
 solveWave :: Potential -> Mass -> Wave
 solveWave (InfiniteSquareWell n a) m x = Complex (a0 * sin (sqrt (2 * m * e) / h_ * x)) 0
     where
         a0 = 1 / sqrt a -- Normalization constant
         e = ((fromIntegral n)^2 * pi^2 * h_**2) / (2 * m * a^2) -- Energy
-solveWave (SimpleHarmonic n w) m x = (a n) * (iterate raiseOp (ground_state x) !! n)
+solveWave (SimpleHarmonic n w) m x = (a n) * (iterate raiseOp ground_state_trans !! n) (Complex x 0)
     where
         a n = (Complex (((m * w) / (pi * h_)) ** (1/4)) 0) * ((-i) ^ n) / (Complex (sqrt ((fact n) * (h_ * w) ^ n)) 0)
-        raiseOp state = (((h_ / i) * (d_d x $ state)) + (Complex 0 (m * w * x))) / (Complex (sqrt (2 * m)) 0)
-        ground_state x = ((a 0) * (Complex (exp ((-m * w * x^2) / (2 * h_)))) 0)
+        raiseOp state = (((*(h_ / i)) . d_d state) <+> ((*imwx) . state)) . (*recipSqrt2m)
+            where
+                imwx = Complex 0 (m * w * x)
+                recipSqrt2m = 1 / (Complex (sqrt (2 * m)) 0)
+        ground_state_trans (Complex x _) = ground_state x
+            where
+                ground_state x = (a 0) * (Complex (exp ((-m * w * x^2) / (2 * h_))) 0)
