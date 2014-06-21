@@ -56,6 +56,12 @@ fact :: (Num a) => Int -> a
 fact 0 = 1
 fact n = fromIntegral n * fact (n-1)
 
+complexConj :: (Num a) => (a -> Complex b b) -> (a -> Complex b b)
+complexConj f x = Complex (re $ f x) (-(im $ f x))
+
+mag :: (Num a, Num b) => (a -> Complex b b) -> (a -> Complex b b)
+mag f x = ((complexConj f) x) * (f x)
+
 (<+>) :: (Num a, Num b) => (a -> b) -> (a -> b) -> (a -> b)
 f <+> g = \x -> f x + g x
 
@@ -65,7 +71,9 @@ d_d :: (Fractional a, Fractional b) => (a -> b) -> a -> b
 d_d f x = ((f (x + eps)) - (f x)) / eps
 
 solveWave :: Potential -> Mass -> Wave
-solveWave (InfiniteSquareWell n a) m x = Complex (a0 * sin (sqrt (2 * m * e) / h_ * x)) 0
+solveWave (InfiniteSquareWell n a) m x
+    | -a < x && x < a = Complex (a0 * sin (sqrt (2 * m * e) / h_ * x)) 0
+    | otherwise       = 0
     where
         a0 = 1 / sqrt a -- Normalization constant
         e = ((fromIntegral n)^2 * pi^2 * h_**2) / (2 * m * a^2) -- Energy
